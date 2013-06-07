@@ -177,6 +177,7 @@ interact_port = 5123
 # To enable, uncomment the section below.
 
 #[mailer]
+#smtp_server = localhost
 #from = Kippo Honeypot
 #from_envelope = kippo@localhost
 #to_envelope = root

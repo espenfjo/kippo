@@ -1,0 +1,6 @@
+*.pyc
+kippo.cfg
+log/*
+data/lastlog.txt
+private.key
+public.key

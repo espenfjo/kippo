@@ -171,3 +171,12 @@ interact_port = 5123
 
 #[database_textlog]
 #logfile = kippo-textlog.log
+
+
+# Mailer: send an e-mail upon a successful login attempt.
+# To enable, uncomment the section below.
+
+#[mailer]
+#from = Kippo Honeypot
+#from_envelope = kippo@localhost
+#to_envelope = root

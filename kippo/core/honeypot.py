@@ -13,7 +13,7 @@ from zope.interface import implements
 from copy import deepcopy, copy
 import sys, os, random, pickle, time, stat, shlex, anydbm
 
-from kippo.core import ttylog, fs, utils
+from kippo.core import ttylog, fs, utils, mailer
 from kippo.core.userdb import UserDB
 from kippo.core.config import config
 import commands
@@ -263,7 +263,6 @@ class HoneyPotProtocol(recvline.HistoricRecvLine):
         self.clientVersion = transport.otherVersionString
         self.logintime = transport.logintime
         self.ttylog_file = transport.ttylog_file
-
         # source IP of client in user visible reports (can be fake or real)
         cfg = config()
         if cfg.has_option('honeypot', 'fake_addr'):
@@ -277,6 +276,10 @@ class HoneyPotProtocol(recvline.HistoricRecvLine):
             '\x03':     self.handle_CTRL_C,
             '\x09':     self.handle_TAB,
             })
+
+        if cfg.has_section('mailer'):
+            mailer.attempt_success(self.realClientIP, self.user.username, self.logintime)
+
 
     def displayMOTD(self):
         try:
@@ -684,6 +687,8 @@ class HoneypotPasswordChecker:
     def checkUserPass(self, username, password):
         if UserDB().checklogin(username, password):
             print 'login attempt [%s/%s] succeeded' % (username, password)
+            #if config().has_section('mailer'):
+                #mailer.attempt_success(self.transport.getPeer().host, username, password)
             return True
         else:
             print 'login attempt [%s/%s] failed' % (username, password)

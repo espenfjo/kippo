@@ -181,3 +181,6 @@ interact_port = 5123
 #from = Kippo Honeypot
 #from_envelope = kippo@localhost
 #to_envelope = root
+
+#[packet_capture]
+#timeout = 60

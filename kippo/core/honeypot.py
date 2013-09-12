@@ -13,7 +13,8 @@ from zope.interface import implements
 from copy import deepcopy, copy
 import sys, os, random, pickle, time, stat, shlex, anydbm
 
-from kippo.core import ttylog, fs, utils, mailer
+from kippo.core import ttylog, fs, utils, mailer 
+from kippo.core.packetcap import PacketCap
 from kippo.core.userdb import UserDB
 from kippo.core.config import config
 import commands
@@ -504,6 +505,11 @@ class HoneyPotRealm:
 class HoneyPotTransport(transport.SSHServerTransport):
 
     hadVersion = False
+    
+    if config().has_section('packet_capture'):
+        packetcapper = PacketCap()
+        packetcapper.daemon = True
+        packetcapper.start()
 
     def connectionMade(self):
         print 'New connection: %s:%s (%s:%s) [session: %d]' % \
@@ -515,6 +521,7 @@ class HoneyPotTransport(transport.SSHServerTransport):
         self.ttylog_open = False
         transport.SSHServerTransport.connectionMade(self)
 
+
     def sendKexInit(self):
         # Don't send key exchange prematurely
         if not self.gotVersion:
@@ -523,6 +530,8 @@ class HoneyPotTransport(transport.SSHServerTransport):
 
     def dataReceived(self, data):
         transport.SSHServerTransport.dataReceived(self, data)
+        if config().has_section('packet_capture'):
+            self.packetcapper.start_capture(self.transport.getPeer().host)
         # later versions seem to call sendKexInit again on their own
         if twisted.version.major < 11 and \
                 not self.hadVersion and self.gotVersion:
@@ -687,8 +696,6 @@ class HoneypotPasswordChecker:
     def checkUserPass(self, username, password):
         if UserDB().checklogin(username, password):
             print 'login attempt [%s/%s] succeeded' % (username, password)
-            #if config().has_section('mailer'):
-                #mailer.attempt_success(self.transport.getPeer().host, username, password)
             return True
         else:
             print 'login attempt [%s/%s] failed' % (username, password)

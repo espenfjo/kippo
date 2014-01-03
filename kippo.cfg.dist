@@ -76,10 +76,20 @@ txtcmds_path = txtcmds
 
 # Public and private SSH key files. If these don't exist, they are created
 # automatically.
+rsa_public_key = data/ssh_host_rsa_key
+rsa_private_key = data/ssh_host_rsa_key.pub
+
+dsa_public_key = data/ssh_host_dsa.key.pub
+dsa_private_key = data/ssh_host_dsa_key
+
+# Extra SSH features 
+# sftp_enabled enables the sftp subsystem
+# exec_enabled enables passing commands using ssh execCommand
 #
-# (defaults: public.key and private.key)
-public_key = public.key
-private_key = private.key
+# (default: false for both)
+sftp_enabled = false
+exec_enabled = true
+
 
 # Initial root password. NO LONGER USED!
 # Instead, see {data_path}/userdb.txt
@@ -171,6 +181,7 @@ interact_port = 5123
 
 #[database_textlog]
 #logfile = kippo-textlog.log
+<<<<<<< HEAD
 
 
 # Mailer: send an e-mail upon a successful login attempt.

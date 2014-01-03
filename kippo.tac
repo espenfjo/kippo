@@ -9,7 +9,9 @@ if sys.platform == 'win32':
     # and this is when running as a service
     #os.chdir(os.path.dirname(inspect.getfile(inspect.currentframe())))
 
+
 from twisted.internet import reactor, defer
+
 from twisted.application import internet, service
 from twisted.cred import portal
 from twisted.conch.ssh import factory, keys
@@ -28,10 +30,14 @@ from kippo.core.config import config
 factory = honeypot.HoneyPotSSHFactory()
 factory.portal = portal.Portal(honeypot.HoneyPotRealm())
 
-pubKeyString, privKeyString = honeypot.getRSAKeys()
+rsa_pubKeyString, rsa_privKeyString = honeypot.getRSAKeys()
+dsa_pubKeyString, dsa_privKeyString = honeypot.getDSAKeys()
 factory.portal.registerChecker(honeypot.HoneypotPasswordChecker())
-factory.publicKeys = {'ssh-rsa': keys.Key.fromString(data=pubKeyString)}
-factory.privateKeys = {'ssh-rsa': keys.Key.fromString(data=privKeyString)}
+factory.publicKeys = {'ssh-rsa': keys.Key.fromString(data=rsa_pubKeyString),
+                      'ssh-dss': keys.Key.fromString(data=dsa_pubKeyString)}
+factory.privateKeys = {'ssh-rsa': keys.Key.fromString(data=rsa_privKeyString),
+                       'ssh-dss': keys.Key.fromString(data=dsa_privKeyString)}
+
 
 cfg = config()
 if cfg.has_option('honeypot', 'ssh_addr'):

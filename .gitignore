@@ -4,3 +4,8 @@ log/*
 data/lastlog.txt
 private.key
 public.key
+data/kippo_host_dsa_key
+data/kippo_host_rsa_key
+data/kippo_host_dsa_key.pub
+data/kippo_host_rsa_key.pub
+

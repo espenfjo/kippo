@@ -79,7 +79,17 @@ class command_wget(HoneyPotCommand):
 
     def download(self, url, fakeoutfile, outputfile, *args, **kwargs):
         try:
-            scheme, host, port, path = client._parse(url)
+            # In twisted 13.1.0 the _parse() function was replaced by the _URI class
+            if hasattr(client, '_parse'):
+                scheme, host, port, path = client._parse(url)
+            else:
+                from twisted.web.client import _URI
+                uri = _URI.fromBytes(url)
+                scheme = uri.scheme
+                host = uri.host
+                port = uri.port
+                path = uri.path
+
             if scheme == 'https':
                 self.writeln('Sorry, SSL not supported in this release')
                 self.exit()

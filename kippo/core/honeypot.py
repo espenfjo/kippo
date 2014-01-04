@@ -281,6 +281,9 @@ class HoneyPotProtocol(recvline.HistoricRecvLine):
         else:
             self.clientIP = self.realClientIP
 
+        if cfg.has_section('mailer'):
+            mailer.attempt_success(self.realClientIP, self.user.username, self.logintime, self.execcmd)
+
         if self.execcmd != None:
             print 'Running exec cmd "%s"' % self.execcmd
             self.cmdstack[0].lineReceived(self.execcmd)
@@ -296,10 +299,6 @@ class HoneyPotProtocol(recvline.HistoricRecvLine):
             '\x03':     self.handle_CTRL_C,
             '\x09':     self.handle_TAB,
             })
-
-        if cfg.has_section('mailer'):
-            mailer.attempt_success(self.realClientIP, self.user.username, self.logintime)
-
 
             # self.terminal.transport.session.conn.transport.loseConnection()
 

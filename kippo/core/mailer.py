@@ -9,10 +9,14 @@ from kippo.core.config import config
     #def __init__(self):
     
 #@staticmethod
-def attempt_success(src, user, time):
+def attempt_success(src, user, time, execcmd):
     # send mail
     formatted_time = strftime("%a, %d %b %Y %H:%M:%S", localtime())
-    body = "Successful attempt from %s on %s (user %s)" % (src, formatted_time, user)
+    body = "Successful attempt from %s on %s (user %s)\n" % (src, formatted_time, user)
+
+    if execcmd != None:
+        body = body + 'Non-interactive command(s) run: "%s"' % execcmd
+
     msg = MIMEText(body)
     msg['From'] = "%s <%s>" % (config().get('mailer', 'from'), config().get('mailer', 'envelope_from'))
     msg['Subject'] = "[Kippo] Successful login attempt by %s" % (src)
